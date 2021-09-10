@@ -11,6 +11,7 @@
  let currPlayer = 1; // active player: 1 or 2
  let board = []; // array of rows, each row is array of cells  (board[y][x])
  
+ let gameIsRunning = true;
  /** makeBoard: create in-JS board structure:
   *    board = array of rows, each row is array of cells  (board[y][x])
   */
@@ -73,7 +74,7 @@
    const piece = document.createElement("div");
    piece.classList.add("piece");
    piece.classList.add(`p${currPlayer}`);
-   piece.style.top = - 50 * (y + 2);
+   //piece.style.top = - 50 * (y + 2);
    const spot = document.getElementById(`${y}-${x}`);
    spot.append(piece);
  }
@@ -82,12 +83,19 @@
  
  function endGame(msg) {
    // TODO: pop up alert message
-   alert(msg);
+   gameIsRunning = false;
+
+   setTimeout(() => {
+    alert(msg);
+   }, 100);
  }
  
  /** handleClick: handle click of column top to play piece */
  
  function handleClick(evt) {
+   if(gameIsRunning === false)
+    return;
+    
    // get x from ID of clicked cell
    const x = +evt.target.id;
  
@@ -109,9 +117,13 @@
  
    // check for tie
    // TODO: check if all cells in board are filled; if so call, call endGame
-   if (board.every(row => row.every(cell => cell))) {
+   /** if (board.every(row => row.every(cell => cell))) {
        return endGame("Tie!");
    }
+   */
+  if (checkForTie()) {
+    return endGame("Tie!");
+  }
    // switch players
    // TODO: switch currPlayer 1 <-> 2
    currPlayer = currPlayer ===1 ? 2 : 1;
@@ -119,6 +131,10 @@
  
  /** checkForWin: check board cell-by-cell for "does a win start here?" */
  
+ function checkForTie(){
+   return board.every(row => row.every(cell => cell));
+ }
+
  function checkForWin() {
    function _win(cells) {
      // Check four cells to see if they're all color of current player
